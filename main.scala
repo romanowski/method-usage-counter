@@ -35,8 +35,8 @@ object Hello {
   }
 
   def main(args: Array[String]): Unit = {
-    val (tastyFiles, classpath) = getCatsTastyAndClasspath
-    val usages = MethodCollector.collect(tastyFiles, classpath)
+    val (tastyFiles, classpath): (List[String], List[String]) = getCatsTastyAndClasspath
+    val catsLibrary = LibraryWrapper(tastyFiles, classpath)
 
     lazy val spark: SparkSession = {
       SparkSession
@@ -50,7 +50,12 @@ object Hello {
     import sqlContext.implicits._
     import org.apache.spark.sql.functions._
 
-    val usagesDF = usages.toDF()
+    val librariesDF = List(catsLibrary.serialized).toDF()
+
+    val usagesDF = librariesDF.flatMap(row => 
+      val serialized = LibraryWrapper.Serialized(row.getAs[String]("tastyFiles"), row.getAs[String]("classpath"))
+      MethodCollector.collect(serialized.deserialized)
+    )
 
     val reduced = usagesDF.groupBy("name").count().sort(col("count").desc)
 

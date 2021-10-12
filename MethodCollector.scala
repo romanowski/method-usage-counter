@@ -23,8 +23,8 @@ object MethodCollector:
       val usages = tastys.flatMap(tasty => traverser.foldTree(List.empty, tasty.ast)(tasty.ast.symbol))
       buffer ++= usages
 
-  def collect(tastyFiles: List[String], classpath: List[String]): List[MethodUsage] = {
+  def collect(libraryWrapper: LibraryWrapper): List[MethodUsage] = {
     val inspector = CustomTastyInspector()
-    TastyInspector.inspectAllTastyFiles(tastyFiles, Nil, classpath)(inspector)
+    TastyInspector.inspectAllTastyFiles(libraryWrapper.tastyFiles, Nil, libraryWrapper.classpath)(inspector)
     inspector.buffer.toList
   }
