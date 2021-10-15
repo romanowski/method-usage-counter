@@ -11,6 +11,7 @@
 // using "org.scala-sbt:io_2.13:1.5.1"
 // using com.lihaoyi::requests:0.6.9
 // using com.lihaoyi::os-lib:0.7.8
+// using jvm adopt:11
 
 import scala3encoders.given 
 import scala3encoders.derivation.Serializer
@@ -167,7 +168,7 @@ def processTastyFile(tastyFile: TastyFile): Seq[TreeInfo] =
       .count()
       .sort(col("count").desc)
 
-    counts.show(1000, false)
+    counts.show(100, false)
 
     spark.stop()
   } finally IO.delete(baseFile)
